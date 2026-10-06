@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { PIXEL } from '../fonts.js';
+import * as audio from '../audio.js';
 
 // "WORLD 1-1" card between the title screen and the level.
 export default class Intro extends Phaser.Scene {
@@ -8,6 +9,8 @@ export default class Intro extends Phaser.Scene {
   create() {
     const { width: w } = this.scale;
     this.cameras.main.setBackgroundColor('#000000');
+    audio.stopMusic();
+    audio.sfx('start');
     const t = (y, s, size, color) => this.add.text(w / 2, y, s, { fontFamily: PIXEL, fontSize: `${size}px`, color }).setOrigin(0.5);
     t(170, 'WORLD 1-1', 32, '#fcfcfc');
     t(228, 'OMNICORP HQ', 20, '#58d854');

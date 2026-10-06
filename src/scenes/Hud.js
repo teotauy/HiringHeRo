@@ -15,7 +15,9 @@ export default class Hud extends Phaser.Scene {
     this.freedText = this.add.text(w - 20, 14, '', { fontFamily: FONT, fontSize: '16px', color: '#dff4ff', stroke: '#071114', strokeThickness: 6 }).setOrigin(1, 0);
     this.featherIcon = this.add.image(120, 26, 'feather').setScale(2.4).setVisible(false);
 
-    this.toastText = this.add.text(w / 2, 70, '', {
+    this.dialogQueue = [];
+    this.dialogBusy = false;
+    this.toastText = this.add.text(w / 2, 180, '', {
       fontFamily: FONT, fontSize: '16px', color: '#f8b800', stroke: '#000000', strokeThickness: 6, align: 'center', lineSpacing: 10,
     }).setOrigin(0.5).setAlpha(0);
 
@@ -132,8 +134,53 @@ export default class Hud extends Phaser.Scene {
   toast(str) {
     if (!this.toastText) return;
     this.tweens.killTweensOf(this.toastText);
-    this.toastText.setText(str).setAlpha(1).setY(70);
-    this.tweens.add({ targets: this.toastText, alpha: 0, y: 60, delay: 1800, duration: 500 });
+    this.toastText.setText(str).setAlpha(1).setY(180);
+    this.tweens.add({ targets: this.toastText, alpha: 0, y: 170, delay: 1800, duration: 500 });
+  }
+
+  // NES-style dialogue box with a portrait and typewriter text. Lines queue and play in order;
+  // gameplay keeps running underneath.
+  dialog(portraitKey, name, text) {
+    this.dialogQueue.push({ portraitKey, name, text });
+    if (!this.dialogBusy) this.nextDialog();
+  }
+
+  nextDialog() {
+    const item = this.dialogQueue.shift();
+    if (!item) { this.dialogBusy = false; return; }
+    this.dialogBusy = true;
+    const { width: w } = this.scale;
+    const x0 = 150; const y0 = 58; const bw = w - 300; const bh = 92;
+    const g = this.add.graphics();
+    g.fillStyle(0x000000, 0.92).fillRect(x0, y0, bw, bh);
+    g.lineStyle(4, 0xfcfcfc).strokeRect(x0 + 4, y0 + 4, bw - 8, bh - 8);
+    const portrait = this.add.image(x0 + 46, y0 + bh / 2, item.portraitKey).setScale(3);
+    const name = this.add.text(x0 + 90, y0 + 18, item.name, { fontFamily: FONT, fontSize: '12px', color: '#f8b800' });
+    const body = this.add.text(x0 + 90, y0 + 40, '', {
+      fontFamily: FONT, fontSize: '14px', color: '#fcfcfc', wordWrap: { width: bw - 120 }, lineSpacing: 8,
+    });
+    let n = 0;
+    const typer = this.time.addEvent({ delay: 22, repeat: item.text.length - 1, callback: () => body.setText(item.text.slice(0, ++n)) });
+    const hold = Math.max(1700, item.text.length * 45);
+    this.time.delayedCall(hold, () => {
+      typer.remove();
+      [g, portrait, name, body].forEach((o) => o.destroy());
+      this.nextDialog();
+    });
+  }
+
+  scrambled(ms) {
+    const { width: w, height: h } = this.scale;
+    this.scrambleObjs?.forEach((o) => o.destroy());
+    const tint = this.add.rectangle(w / 2, h / 2, w, h, 0x8c00a8, 0.16);
+    const banner = this.add.text(w / 2, 230, 'BUZZWORD HIT!\nCONTROLS SCRAMBLED', {
+      fontFamily: FONT, fontSize: '20px', color: '#fcfcfc', backgroundColor: '#8c00a8', align: 'center', padding: { x: 12, y: 10 }, lineSpacing: 10,
+    }).setOrigin(0.5);
+    const bar = this.add.rectangle(w / 2 - 150, 282, 300, 8, 0xe0a0ff).setOrigin(0, 0.5);
+    this.scrambleObjs = [tint, banner, bar];
+    this.tweens.add({ targets: banner, alpha: 0.4, yoyo: true, repeat: -1, duration: 160 });
+    this.tweens.add({ targets: bar, width: 0, duration: ms });
+    this.time.delayedCall(ms, () => { if (this.scrambleObjs?.[0] === tint) { this.scrambleObjs.forEach((o) => o.destroy()); this.scrambleObjs = null; } });
   }
 
   bossIntro(allies) {

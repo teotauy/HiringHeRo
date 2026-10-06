@@ -29,14 +29,14 @@ export const platforms = [
 // Ghosted candidates. `hidden` = behind a breakable object; `gives` = suit unlock.
 export const ghosts = [
   { col: 22, row: 13, name: 'Maya', role: 'Graphic Designer',
-    line: 'Thanks for respecting my humanity, Sam!' },
+    prop: 'pen', line: 'Thanks for respecting my humanity, Sam!' },
   { col: 47, row: 9, name: 'Marcus', role: 'IT Specialist',
-    line: 'Appreciate the dignity power-up!' },
-  { col: 66, row: 13, name: 'Jordan', role: 'Data Analyst', hidden: 'stack',
+    prop: 'keyboard', line: 'Appreciate the dignity power-up!' },
+  { col: 66, row: 13, name: 'Jordan', role: 'Data Analyst', hidden: 'stack', prop: 'chart',
     line: "Thanks for telling me I'm not right for this one. My friend would be a perfect fit!" },
-  { col: 86, row: 11, name: 'Sarah', role: 'Copywriter', gives: 'feather',
+  { col: 86, row: 11, name: 'Sarah', role: 'Copywriter', gives: 'feather', prop: 'quill',
     line: 'Take my quill, Sam. Hold JUMP to glide on pure buzzwords.' },
-  { col: 125, row: 7, name: 'Riley', role: 'Office Coordinator', hidden: 'cabinet',
+  { col: 125, row: 7, name: 'Riley', role: 'Office Coordinator', hidden: 'cabinet', prop: 'mug',
     line: "I'll recommend this company to friends who need a job." },
 ];
 
@@ -63,10 +63,20 @@ export const signs = [
   [5, 'LEFT/RIGHT: MOVE'],
   [11, 'JUMP'],
   [17, 'FIRE: FREE THE CANDIDATES'],
+  [40, 'BUZZWORDS HURT. SHOOT THEM DOWN.'],
   [61, 'Those resumes look... unread.'],
   [97, 'SCOPE CREEP. Wait for it.'],
   [104, 'Something is stuck across that gap.'],
   [157, 'ATS OVERLORD AHEAD. Every candidate you free fights beside you.'],
+];
+
+// Background props (no collision): [col, texture]. Fires sit on top of desks.
+export const decor = [
+  [8, 'officedesk'], [14, 'paperpile'], [27, 'officedesk', true], [31, 'stamp'],
+  [43, 'paperpile'], [57, 'officedesk'], [63, 'stamp'], [72, 'paperpile'],
+  [79, 'officedesk', true], [92, 'officedesk'], [114, 'paperpile'], [118, 'stamp'],
+  [131, 'officedesk', true], [138, 'paperpile'], [146, 'officedesk'], [152, 'stamp'],
+  [161, 'paperpile'], [163, 'officedesk', true],
 ];
 
 // Boss arena spans these columns (exactly one screen wide at zoom 2)

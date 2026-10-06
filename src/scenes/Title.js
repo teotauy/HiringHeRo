@@ -26,10 +26,13 @@ export default class Title extends Phaser.Scene {
     this.drawGhostParade();
 
     this.drawLogo(w);
-    txt(this, w / 2, 288, "HUMANITY ISN'T JUST A RESOURCE", 16, NES.green, { stroke: NES.black, strokeThickness: 8 });
+    txt(this, w / 2, 304, "HUMANITY ISN'T JUST A RESOURCE", 16, NES.green, { stroke: NES.black, strokeThickness: 8 });
 
-    this.sam = this.add.image(96, 452, 'sam').setScale(4).setOrigin(0.5, 1);
-    this.tweens.add({ targets: this.sam, y: 446, yoyo: true, repeat: -1, duration: 420, ease: 'Stepped', easeParams: [2] });
+    const sams = [this.add.image(70, 452, 'sam_stand'), this.add.image(150, 452, 'samF_stand').setFlipX(true)];
+    sams.forEach((s, i) => {
+      s.setScale(4).setOrigin(0.5, 1);
+      this.tweens.add({ targets: s, y: 446, yoyo: true, repeat: -1, duration: 420, delay: i * 210, ease: 'Stepped', easeParams: [2] });
+    });
 
     this.pushStart = txt(this, w / 2, 380, 'PUSH START', 24, NES.white, { stroke: NES.black, strokeThickness: 8 });
     this.blink = this.time.addEvent({ delay: 450, loop: true, callback: () => this.pushStart.setVisible(!this.pushStart.visible) });
@@ -48,25 +51,56 @@ export default class Title extends Phaser.Scene {
   }
 
   drawLogo(w) {
+    // "HR" is the hero: the H and R in both words are bigger, flame-colored, and glow.
     const band = (t, stops) => {
       const g = t.context.createLinearGradient(0, 0, 0, t.height);
       // Hard-edged bands (two stops at the same offset) mimic NES palette shading.
       stops.forEach(([o, c]) => g.addColorStop(o, c));
       t.setFill(g);
     };
-    const hiringShadow = txt(this, w / 2 + 6, 112 + 6, 'HIRING', 48, NES.red);
-    const hiring = txt(this, w / 2, 112, 'HIRING', 48, NES.white, { stroke: NES.black, strokeThickness: 8 });
-    band(hiring, [[0, NES.white], [0.5, NES.white], [0.5, NES.blue], [1, NES.blue]]);
+    const HOT = [[0, '#fce0a8'], [0.28, '#fce0a8'], [0.28, NES.yellow], [0.55, NES.yellow], [0.55, '#f83800'], [1, '#f83800']];
+    const COOL = [[0, NES.white], [0.5, NES.white], [0.5, NES.blue], [1, NES.blue]];
+    const parts = [];
+    const glows = [];
 
-    const heroShadow = txt(this, w / 2 + 8, 206 + 8, 'HeRo', 104, NES.red);
-    const hero = txt(this, w / 2, 206, 'HeRo', 104, NES.yellow, { stroke: NES.black, strokeThickness: 12 });
-    band(hero, [[0, '#fce0a8'], [0.3, '#fce0a8'], [0.3, NES.yellow], [0.62, NES.yellow], [0.62, NES.orange], [1, NES.orange]]);
+    const word = (letters, baseY) => {
+      const made = letters.map(([ch, size, hot]) => {
+        const style = { fontFamily: PIXEL, fontSize: `${size}px`, color: NES.white, stroke: NES.black, strokeThickness: hot ? 14 : 10 };
+        const t = this.add.text(0, baseY, ch, style).setOrigin(0, 1);
+        band(t, hot ? HOT : COOL);
+        return { t, size, hot };
+      });
+      const gap = 2;
+      const total = made.reduce((a, m) => a + m.t.width, 0) + gap * (made.length - 1);
+      let x = w / 2 - total / 2;
+      for (const m of made) {
+        const shadow = this.add.text(x + m.size / 12, baseY + m.size / 12, m.t.text, {
+          fontFamily: PIXEL, fontSize: `${m.size}px`, color: NES.red, stroke: NES.red, strokeThickness: m.hot ? 14 : 10,
+        }).setOrigin(0, 1);
+        if (m.hot) {
+          const glow = this.add.text(x, baseY, m.t.text, {
+            fontFamily: PIXEL, fontSize: `${m.size}px`, color: NES.yellow, stroke: NES.yellow, strokeThickness: 20,
+          }).setOrigin(0, 1).setAlpha(0.45);
+          glows.push(glow);
+          parts.push(glow);
+        }
+        parts.push(shadow);
+        m.t.setX(x).setDepth(1);
+        parts.push(m.t);
+        x += m.t.width + gap;
+      }
+    };
+    word([['H', 64, true], ['I', 44], ['R', 64, true], ['I', 44], ['N', 44], ['G', 44]], 100);
+    word([['H', 120, true], ['e', 84], ['R', 120, true], ['o', 84]], 270);
 
-    // Drop the logo in from above, NES-boot style.
-    [hiringShadow, hiring, heroShadow, hero].forEach((o) => {
+    // Drop the logo in from above, NES-boot style, then make the HR throb.
+    parts.forEach((o) => {
       const y = o.y;
-      o.y -= 260;
+      o.y -= 300;
       this.tweens.add({ targets: o, y, duration: 700, ease: 'Bounce.out' });
+    });
+    this.time.delayedCall(800, () => {
+      this.tweens.add({ targets: glows, alpha: 0.12, yoyo: true, repeat: -1, duration: 520, ease: 'Stepped', easeParams: [3] });
     });
   }
 
@@ -198,10 +232,8 @@ export default class Title extends Phaser.Scene {
 
   startGame() {
     this.mode = 'starting';
-    audio.stopMusic();
-    audio.sfx('start');
-    this.cameras.main.flash(200, 252, 252, 252);
-    this.time.delayedCall(250, () => this.cameras.main.fadeOut(500, 0, 0, 0));
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Intro'));
+    audio.sfx('select');
+    this.cameras.main.fadeOut(300, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.start('Select'));
   }
 }

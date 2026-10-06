@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { loadPixelFont } from '../fonts.js';
+import { drawSam, drawGhosts } from '../art.js';
 
 // Greybox art: every texture is drawn in code so the game runs with zero asset files.
 // The art pass replaces these keys with real sprites one by one.
@@ -14,20 +15,16 @@ export default class Boot extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   create() {
-    tex(this, 'sam', 14, 24, (g) => {
-      g.fillStyle(0x7a4a22).fillRect(3, 0, 9, 4);
-      g.fillStyle(0xf0c8a0).fillRect(3, 3, 8, 6);
-      g.fillStyle(0x7a4a22).fillRect(3, 3, 2, 3);
-      g.fillStyle(0x1b1b1b).fillRect(9, 5, 1, 1);
-      g.fillStyle(0xdfe9f0).fillRect(2, 9, 10, 8);
-      g.fillStyle(0xc0392b).fillRect(6, 9, 2, 7);
-      g.fillStyle(0x2c3e50).fillRect(3, 17, 8, 5);
-      g.fillStyle(0x1b1b1b).fillRect(2, 22, 4, 2).fillRect(8, 22, 5, 2);
-    });
+    drawSam(this);
+    drawGhosts(this);
     tex(this, 'ground', 16, 16, (g) => {
-      g.fillStyle(0x16242a).fillRect(0, 0, 16, 16);
-      g.fillStyle(0x3c5a5f).fillRect(0, 0, 16, 3);
-      g.fillStyle(0x223840).fillRect(2, 7, 3, 2).fillRect(10, 11, 3, 2);
+      // Grey office counter slab with pipes underneath, like the key art.
+      g.fillStyle(0x1a242c).fillRect(0, 0, 16, 16);
+      g.fillStyle(0x9aa8b4).fillRect(0, 0, 16, 2);
+      g.fillStyle(0x6c7c88).fillRect(0, 2, 16, 3);
+      g.fillStyle(0x3c4a54).fillRect(0, 5, 16, 1);
+      g.fillStyle(0x2c3a44).fillRect(3, 8, 3, 8).fillRect(11, 6, 2, 10);
+      g.fillStyle(0x3c5a4a).fillRect(3, 12, 3, 1);
     });
     tex(this, 'desk', 16, 8, (g) => {
       g.fillStyle(0x8a5a35).fillRect(0, 0, 16, 3);
@@ -45,12 +42,6 @@ export default class Boot extends Phaser.Scene {
       g.fillStyle(0x95a5a6).fillRect(1, 1, 14, 9).fillRect(1, 11, 14, 9).fillRect(1, 21, 14, 10);
       g.fillStyle(0x2c3e50).fillRect(6, 4, 4, 2).fillRect(6, 14, 4, 2).fillRect(6, 24, 4, 2);
     });
-    tex(this, 'ghost', 14, 16, (g) => {
-      g.fillStyle(0xdff4ff).fillCircle(7, 6, 6).fillRect(1, 6, 12, 7);
-      g.fillTriangle(1, 13, 4, 13, 2, 16).fillTriangle(5, 13, 9, 13, 7, 16).fillTriangle(10, 13, 13, 13, 12, 16);
-      g.fillStyle(0x1b2b34).fillRect(4, 5, 2, 2).fillRect(9, 5, 2, 2);
-      g.fillStyle(0x9fc6dd).fillRect(5, 9, 4, 1);
-    });
     tex(this, 'envelope', 9, 6, (g) => {
       g.fillStyle(0xffffff).fillRect(0, 0, 9, 6);
       g.lineStyle(1, 0xc0392b).lineBetween(0, 0, 4.5, 3).lineBetween(9, 0, 4.5, 3);
@@ -64,14 +55,32 @@ export default class Boot extends Phaser.Scene {
       g.fillStyle(0x34495e).fillRect(0, 0, 14, 8);
       g.fillStyle(0xffd84a).fillRect(4, 5, 6, 3);
     });
-    tex(this, 'boss', 64, 80, (g) => {
-      g.fillStyle(0x5d6d6e).fillRect(4, 30, 56, 50);
-      g.fillStyle(0x7f8c8d).fillRect(8, 34, 22, 20).fillRect(34, 34, 22, 20).fillRect(8, 57, 48, 20);
-      g.fillStyle(0x2c3e50).fillRect(16, 42, 6, 3).fillRect(42, 42, 6, 3).fillRect(29, 65, 6, 3);
-      g.fillStyle(0x3b4a3f).fillRect(0, 0, 30, 28).fillRect(34, 4, 30, 24);
-      g.fillStyle(0x0f2a12).fillRect(3, 3, 24, 22).fillRect(37, 7, 24, 18);
-      g.fillStyle(0x39ff88).fillRect(11, 8, 8, 12).fillRect(45, 10, 8, 12);
-      g.fillStyle(0x0f2a12).fillRect(13, 10, 4, 8).fillRect(47, 12, 4, 8);
+    tex(this, 'boss', 72, 88, (g) => {
+      // The ATS Overlord: a heap of filing cabinets and CRTs reading 0 (interviews granted).
+      g.lineStyle(2, 0xd82800).lineBetween(10, 40, 2, 86).lineBetween(60, 44, 70, 84);
+      g.lineStyle(2, 0x3cbcfc).lineBetween(20, 44, 14, 86).lineBetween(52, 46, 58, 86);
+      g.fillStyle(0x4c5c5c).fillRect(8, 36, 56, 48);
+      g.fillStyle(0x7c8c8c).fillRect(11, 39, 24, 20).fillRect(37, 39, 24, 20).fillRect(11, 61, 50, 20);
+      g.fillStyle(0x9cacac).fillRect(11, 39, 24, 2).fillRect(37, 39, 24, 2).fillRect(11, 61, 50, 2);
+      g.fillStyle(0x2c3a3c).fillRect(19, 48, 8, 3).fillRect(45, 48, 8, 3).fillRect(32, 70, 8, 3);
+      const crt = (x, y, w, h) => {
+        g.fillStyle(0x5c6a4c).fillRect(x, y, w, h);
+        g.fillStyle(0x0c2a12).fillRect(x + 3, y + 3, w - 6, h - 6);
+        g.fillStyle(0x58d854).fillRect(x + w / 2 - 4, y + 7, 8, h - 14);
+        g.fillStyle(0x0c2a12).fillRect(x + w / 2 - 2, y + 9, 4, h - 18);
+      };
+      crt(2, 6, 30, 26); crt(38, 0, 32, 30); crt(22, 20, 26, 20);
+      g.fillStyle(0xd82800).fillRect(30, 28, 3, 3).fillRect(39, 28, 3, 3);
+    });
+    tex(this, 'gear', 32, 32, (g) => {
+      g.fillStyle(0x8c5c2c);
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2;
+        g.fillRect(16 + Math.cos(a) * 12 - 3, 16 + Math.sin(a) * 12 - 3, 6, 6);
+      }
+      g.fillCircle(16, 16, 12);
+      g.fillStyle(0xb87c3c).fillCircle(16, 16, 9);
+      g.fillStyle(0x3c2a14).fillCircle(16, 16, 4);
     });
     tex(this, 'fireball', 12, 12, (g) => {
       g.fillStyle(0x6c2bd9).fillCircle(6, 6, 6);
@@ -96,12 +105,50 @@ export default class Boot extends Phaser.Scene {
       g.fillStyle(0xf4f1e8).fillEllipse(6, 5, 6, 10);
       g.lineStyle(1, 0x2c3e50).lineBetween(2, 11, 8, 1);
     });
-    tex(this, 'wall', 64, 64, (g) => {
-      g.fillStyle(0x0b1a1f).fillRect(0, 0, 64, 64);
-      g.fillStyle(0x102a2a).fillRect(4, 6, 24, 16).fillRect(36, 30, 24, 16);
-      g.fillStyle(0x1f5a3a).fillRect(7, 9, 18, 10).fillRect(39, 33, 18, 10);
-      g.fillStyle(0x39ff88).fillRect(9, 11, 8, 1).fillRect(9, 14, 12, 1).fillRect(41, 35, 10, 1).fillRect(41, 38, 6, 1);
-      g.fillStyle(0x0e2226).fillRect(0, 50, 64, 2);
+    tex(this, 'wall', 96, 96, (g) => {
+      // Server-room wall of green CRT monitors in racks.
+      g.fillStyle(0x0a1c20).fillRect(0, 0, 96, 96);
+      g.fillStyle(0x10282c).fillRect(0, 0, 4, 96).fillRect(46, 0, 4, 96);
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 2; c++) {
+          const x = 7 + c * 46 + (r % 2) * 4;
+          const y = 4 + r * 23;
+          g.fillStyle(0x16343a).fillRect(x, y, 34, 19);
+          g.fillStyle(0x0c3a1c).fillRect(x + 2, y + 2, 30, 15);
+          g.fillStyle(0x2c8a44);
+          for (let l = 0; l < 4; l++) g.fillRect(x + 4, y + 4 + l * 3, 6 + ((r * 7 + c * 5 + l * 11) % 20), 1);
+          if ((r + c) % 3 === 0) g.fillStyle(0x58d854).fillRect(x + 22, y + 6, 6, 7);
+        }
+      }
+    });
+    tex(this, 'fire1', 12, 14, (g) => {
+      g.fillStyle(0xd82800).fillTriangle(0, 14, 12, 14, 6, 0);
+      g.fillStyle(0xf87858).fillTriangle(2, 14, 10, 14, 5, 4);
+      g.fillStyle(0xf8b800).fillTriangle(4, 14, 9, 14, 6, 8);
+    });
+    tex(this, 'fire2', 12, 14, (g) => {
+      g.fillStyle(0xd82800).fillTriangle(0, 14, 12, 14, 7, 1);
+      g.fillStyle(0xf87858).fillTriangle(2, 14, 10, 14, 7, 5);
+      g.fillStyle(0xf8b800).fillTriangle(3, 14, 8, 14, 5, 9);
+    });
+    tex(this, 'officedesk', 32, 22, (g) => {
+      g.fillStyle(0x6c4a2c).fillRect(0, 10, 32, 4);
+      g.fillStyle(0x4c3420).fillRect(1, 14, 10, 8).fillRect(26, 14, 5, 8);
+      g.fillStyle(0x2c3a3c).fillRect(15, 0, 12, 9);
+      g.fillStyle(0x0c3a1c).fillRect(16, 1, 10, 7);
+      g.fillStyle(0x58d854).fillRect(17, 3, 6, 1).fillRect(17, 5, 4, 1);
+      g.fillStyle(0xf0f0f0).fillRect(3, 6, 8, 4);
+      g.fillStyle(0xbcbcbc).fillRect(4, 4, 7, 2);
+    });
+    tex(this, 'paperpile', 14, 18, (g) => {
+      for (let y = 0; y < 18; y += 3) {
+        g.fillStyle(y % 6 ? 0xf4f1e8 : 0xd8d2c4).fillRect((y * 7) % 3, y, 13, 3);
+      }
+    });
+    tex(this, 'stamp', 22, 14, (g) => {
+      g.fillStyle(0xf4f1e8).fillRect(0, 0, 22, 14);
+      g.lineStyle(1, 0xd82800).strokeRect(3, 4, 16, 6);
+      g.fillStyle(0xd82800).fillRect(5, 6, 12, 2);
     });
     tex(this, 'spark', 3, 3, (g) => { g.fillStyle(0xffffff).fillRect(0, 0, 3, 3); });
 

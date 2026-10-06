@@ -16,6 +16,18 @@ const JUMP_BUFFER_MS = 130;
 const FIRE_COOLDOWN_MS = 220;
 const BOSS_HP = 24;
 
+// Sam's feedback when freeing a candidate. Bad news, honestly delivered, is still closure.
+const REJECTIONS = [
+  "You're not the right fit.",
+  "The position didn't get funding.",
+  'We went another direction.',
+  'We hired your ex.',
+  'The role was filled internally. By the CEO\'s nephew.',
+  "You're overqualified. And underqualified.",
+  'The hiring manager quit. So did the job.',
+  'We paused hiring. Forever.',
+];
+const BUZZWORDS = ['SYNERGY!', 'PIVOT!', 'LEVERAGE!', 'CIRCLE BACK!', 'BANDWIDTH!'];
 
 export default class Level1 extends Phaser.Scene {
   constructor() { super('Level1'); }
@@ -39,20 +51,23 @@ export default class Level1 extends Phaser.Scene {
     this.bossActive = false;
     this.bossDone = false;
     this.frozen = false;
+    this.skin = this.registry.get('skin') || 'sam';
+    this.rejections = Phaser.Utils.Array.Shuffle([...REJECTIONS]);
 
     this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
     const cam = this.cameras.main;
     cam.setZoom(2).setBounds(0, 0, WORLD_W, WORLD_H).setBackgroundColor('#0b1a1f');
 
-    this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'wall').setOrigin(0).setScrollFactor(0.4, 1).setAlpha(0.8);
+    this.add.tileSprite(0, 0, WORLD_W, WORLD_H, 'wall').setOrigin(0).setScrollFactor(0.4, 1).setAlpha(0.6);
+    this.buildDecor();
 
     this.buildTerrain();
     this.buildSigns();
     this.buildCheckpoints();
 
     const start = this.checkpointPos(0);
-    this.player = this.physics.add.sprite(start.x, start.y, 'sam').setDepth(10);
-    this.player.body.setSize(10, 22).setOffset(2, 2);
+    this.player = this.physics.add.sprite(start.x, start.y, `${this.skin}_stand`).setDepth(10);
+    this.player.body.setSize(10, 22).setOffset(3, 2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.solids);
 
@@ -84,6 +99,18 @@ export default class Level1 extends Phaser.Scene {
     for (const [col, row, len] of L.platforms) {
       const ts = this.add.tileSprite(col * T, row * T, len * T, 8, 'desk').setOrigin(0);
       this.solids.add(ts);
+    }
+  }
+
+  buildDecor() {
+    for (const [col, key, onFire] of L.decor) {
+      const top = L.groundTopRow(col) * T;
+      const d = this.add.image(col * T, top, key).setOrigin(0.5, 1).setDepth(2);
+      if (onFire) {
+        const f = this.add.sprite(col * T - 8, top - 10, 'fire1').setOrigin(0.5, 1).setDepth(3);
+        this.time.addEvent({ delay: 140, loop: true, callback: () => f.setTexture(f.texture.key === 'fire1' ? 'fire2' : 'fire1') });
+      }
+      if (key === 'stamp') d.setAngle(Phaser.Math.Between(-12, 12));
     }
   }
 
@@ -129,7 +156,7 @@ export default class Level1 extends Phaser.Scene {
   buildGhosts() {
     this.ghosts = this.physics.add.group({ allowGravity: false, immovable: true });
     for (const def of L.ghosts) {
-      const g = this.ghosts.create(def.col * T + 8, def.row * T + 8, 'ghost');
+      const g = this.ghosts.create(def.col * T + 8, def.row * T + 8, def.prop ? `ghost_${def.prop}` : 'ghost');
       g.def = def;
       g.freed = false;
       g.hidden = !!def.hidden;
@@ -149,14 +176,19 @@ export default class Level1 extends Phaser.Scene {
   }
 
   buildHazards() {
-    // Buzzword Flashbangs: touch one and your controls reverse for a few seconds.
+    // Buzzword Flashbangs: touching one costs a heart and scrambles your controls for 3 seconds.
     this.orbs = this.physics.add.group({ allowGravity: false, immovable: true });
     for (const [col, row, range] of L.orbs) {
       const o = this.orbs.create(col * T, row * T, 'orb');
       o.hp = 2;
+      o.body.setCircle(6, 2, 2);
       this.tweens.add({ targets: o, x: o.x + range * T, yoyo: true, repeat: -1, duration: 1400 + range * 200, ease: 'Sine.inOut' });
-      o.label = this.add.text(o.x, o.y - 12, 'SYNERGY', { fontFamily: FONT, fontSize: '8px', color: '#d6c2ff' })
-        .setOrigin(0.5).setResolution(4);
+      this.tweens.add({ targets: o, scale: 1.25, yoyo: true, repeat: -1, duration: 260, ease: 'Stepped', easeParams: [2] });
+      o.label = this.add.text(o.x, o.y - 14, BUZZWORDS[0], {
+        fontFamily: FONT, fontSize: '8px', color: '#fcfcfc', backgroundColor: '#8c00a8', padding: { x: 2, y: 2 },
+      }).setOrigin(0.5).setResolution(4).setDepth(11);
+      let i = 0;
+      this.time.addEvent({ delay: 650, loop: true, callback: () => o.active && o.label.setText(BUZZWORDS[++i % BUZZWORDS.length]) });
     }
     this.physics.add.overlap(this.player, this.orbs, () => this.flashbang());
     this.physics.add.overlap(this.bullets, this.orbs, (b, o) => {
@@ -200,6 +232,8 @@ export default class Level1 extends Phaser.Scene {
     if (!pinned) { if (left) vx -= RUN_SPEED; if (right) vx += RUN_SPEED; }
     p.setVelocityX(vx);
     if (vx !== 0) { this.facing = Math.sign(vx); p.setFlipX(this.facing < 0); }
+    const frame = !onGround ? 'jump' : (vx !== 0 && Math.floor(time / 110) % 2 ? 'run' : 'stand');
+    p.setTexture(`${this.skin}_${frame}`);
 
     if (!pinned && time - this.lastJumpPress < JUMP_BUFFER_MS && time - this.lastGround < COYOTE_MS) {
       p.setVelocityY(JUMP_VELOCITY);
@@ -215,7 +249,7 @@ export default class Level1 extends Phaser.Scene {
     if (fireHeld && time > this.nextFire) this.fire(time);
 
     for (const b of this.bullets.getChildren().slice()) if (time > b.die) b.destroy();
-    for (const o of this.orbs.getChildren()) o.label.setPosition(o.x, o.y - 12);
+    for (const o of this.orbs.getChildren()) o.label.setPosition(o.x, o.y - 14);
     for (const g of this.ghosts.getChildren()) if (!g.freed) g.aura.setPosition(g.x, g.y);
 
     this.updateBeam(time);
@@ -308,7 +342,11 @@ export default class Level1 extends Phaser.Scene {
     audio.sfx('free');
     this.followers.push(g);
     this.burst(g.x, g.y, 0xdff4ff);
-    this.speech(g.x, g.y - 12, `${g.def.name}: "${g.def.line}"`);
+    // Sam delivers honest feedback, then the freed candidate answers.
+    if (!this.rejections.length) this.rejections = Phaser.Utils.Array.Shuffle([...REJECTIONS]);
+    const reason = this.rejections.pop();
+    this.hud.dialog(`${this.skin}_stand`, 'SAM', `${g.def.name}, ${reason[0].toLowerCase()}${reason.slice(1)}`);
+    this.hud.dialog(g.texture.key, g.def.name.toUpperCase(), g.def.line);
     this.hud.toast(`CANDIDATE FREED  ${this.freedCount}/5`);
     if (g.def.gives === 'feather') {
       this.hasFeather = true;
@@ -318,12 +356,12 @@ export default class Level1 extends Phaser.Scene {
 
   flashbang() {
     const now = this.time.now;
-    if (now < this.reverseUntil) return;
+    if (!this.damage(now)) return;
     this.reverseUntil = now + 3000;
-    this.cameras.main.shake(200, 0.006);
-    this.cameras.main.flash(120, 180, 140, 255);
-    this.floatText(this.player.x, this.player.y - 18, 'SYNERGY! PARADIGM SHIFT!', '#d6c2ff');
-    this.hud.toast('BUZZWORD FLASHBANG: controls reversed');
+    this.cameras.main.shake(250, 0.008);
+    this.cameras.main.flash(150, 180, 60, 255);
+    this.floatText(this.player.x, this.player.y - 18, 'PARADIGM SHIFT!', '#e0a0ff');
+    this.hud.scrambled(3000);
   }
 
   // Returns true if the hit landed.
@@ -377,7 +415,13 @@ export default class Level1 extends Phaser.Scene {
     this.wallCollider = this.physics.add.collider(this.player, this.arenaWall);
 
     this.hearts = 3;
-    this.boss = this.physics.add.image(L.arenaEnd * T - 48, 120, 'boss');
+    this.gears = [[-30, -30, 1], [30, -36, -1], [-26, 26, -1]].map(([dx, dy, dir]) => {
+      const gear = this.add.image(0, 0, 'gear').setDepth(4);
+      gear.offset = { dx, dy };
+      this.tweens.add({ targets: gear, angle: 360 * dir, repeat: -1, duration: 2400 });
+      return gear;
+    });
+    this.boss = this.physics.add.image(L.arenaEnd * T - 48, 120, 'boss').setDepth(5);
     this.boss.body.setAllowGravity(false).setImmovable(true);
     this.boss.hp = BOSS_HP;
     this.bossPattern = 0;
@@ -402,6 +446,7 @@ export default class Level1 extends Phaser.Scene {
   updateBoss(time) {
     const boss = this.boss;
     boss.y = 150 + Math.sin(time / 700) * 40;
+    for (const gear of this.gears) gear.setPosition(boss.x + gear.offset.dx, boss.y + gear.offset.dy);
     if (time > this.bossNext) {
       const pattern = this.bossPattern % 3;
       this.bossPattern += 1;
@@ -443,6 +488,8 @@ export default class Level1 extends Phaser.Scene {
   }
 
   clearBoss() {
+    this.gears.forEach((gear) => gear.destroy());
+    this.gears = [];
     this.bossColliders.forEach((c) => c.destroy());
     this.fireballs.clear(true, true);
   }
