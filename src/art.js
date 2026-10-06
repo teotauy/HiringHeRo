@@ -130,3 +130,6 @@ export function drawGhosts(scene) {
     pix(scene, `ghost_${name}`, [{ rows: GHOST, pal }, prop]);
   }
 }
+
+// Display names for the two Sam looks. "Sam" stays the nickname in dialogue.
+export const SAM_NAMES = { sam: 'SAMUEL', samF: 'SAMANTHA' };

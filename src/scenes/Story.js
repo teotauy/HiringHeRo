@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PIXEL } from '../fonts.js';
 import * as audio from '../audio.js';
+import { SAM_NAMES } from '../art.js';
 
 // The setup, told in five panels. Any button finishes the line, then advances; SKIP jumps to the level.
 export default class Story extends Phaser.Scene {
@@ -15,7 +16,7 @@ export default class Story extends Phaser.Scene {
       { draw: () => this.drawMachine(), text: 'ITS APPLICANT TRACKING SYSTEM SWALLOWS EVERY RESUME. NO ONE EVER HEARS BACK.' },
       { draw: () => this.drawArmy(), text: 'EVERY GHOSTED CANDIDATE BECOMES A GHOST. OMNICORP IS BUILDING AN ARMY.' },
       { draw: () => this.drawTraining(), text: 'ONLY ONE THING STANDS IN THEIR WAY: A JR. RECRUITER WHO STILL BELIEVES EVERY CANDIDATE DESERVES AN ANSWER.' },
-      { draw: () => this.drawHero(), text: 'SAM. ARMED WITH STATUS UPDATES.\nTIME TO GIVE THE GHOSTS SOME CLOSURE.' },
+      { draw: () => this.drawHero(), text: `${SAM_NAMES[this.skin]}. ARMED WITH STATUS UPDATES.\nTIME TO GIVE THE GHOSTS SOME CLOSURE.` },
     ];
     this.index = -1;
     this.layer = this.add.container(0, 0);
@@ -141,7 +142,7 @@ export default class Story extends Phaser.Scene {
   drawHero() {
     const glow = this.add.circle(480, 200, 150, 0xf8b800, 0.15);
     const sam = this.add.image(480, 372, `${this.skin}_stand`).setOrigin(0.5, 1).setScale(11);
-    const name = this.add.text(480, 56, 'SAM', { fontFamily: PIXEL, fontSize: '48px', color: '#f8b800', stroke: '#000000', strokeThickness: 8 }).setOrigin(0.5);
+    const name = this.add.text(480, 56, SAM_NAMES[this.skin], { fontFamily: PIXEL, fontSize: '48px', color: '#f8b800', stroke: '#000000', strokeThickness: 8 }).setOrigin(0.5);
     this.layer.add([glow, sam, name]);
     this.tweens.add({ targets: glow, scale: 1.2, alpha: 0.3, yoyo: true, repeat: -1, duration: 500 });
     this.cameras.main.flash(200, 252, 252, 252);

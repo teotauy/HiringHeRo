@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { PIXEL } from '../fonts.js';
 import * as audio from '../audio.js';
+import { SAM_NAMES } from '../art.js';
 
 const CHOICES = ['sam', 'samF'];
 
@@ -17,7 +18,7 @@ export default class Select extends Phaser.Scene {
       const x = w / 2 + (i === 0 ? -160 : 160);
       const frame = this.add.rectangle(x, 270, 200, 250, 0x000000).setStrokeStyle(4, 0x7c7c7c).setInteractive({ useHandCursor: true });
       const img = this.add.image(x, 270, `${key}_stand`).setScale(8);
-      this.add.text(x, 420, 'SAM', { fontFamily: PIXEL, fontSize: '20px', color: '#fcfcfc' }).setOrigin(0.5);
+      this.add.text(x, 420, SAM_NAMES[key], { fontFamily: PIXEL, fontSize: '20px', color: '#fcfcfc' }).setOrigin(0.5);
       frame.on('pointerdown', () => { this.cursor = i; this.refresh(); this.pick(); });
       return { frame, img };
     });

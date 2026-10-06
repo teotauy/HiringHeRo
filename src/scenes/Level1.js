@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import * as L from '../level1-data.js';
 import { PIXEL as FONT } from '../fonts.js';
 import * as audio from '../audio.js';
+import { SAM_NAMES } from '../art.js';
 
 const { T, ROWS, COLS } = L;
 const WORLD_W = COLS * T;
@@ -345,7 +346,7 @@ export default class Level1 extends Phaser.Scene {
     // Sam delivers honest feedback, then the freed candidate answers.
     if (!this.rejections.length) this.rejections = Phaser.Utils.Array.Shuffle([...REJECTIONS]);
     const reason = this.rejections.pop();
-    this.hud.dialog(`${this.skin}_stand`, 'SAM', `${g.def.name}, ${reason[0].toLowerCase()}${reason.slice(1)}`);
+    this.hud.dialog(`${this.skin}_stand`, SAM_NAMES[this.skin], `${g.def.name}, ${reason[0].toLowerCase()}${reason.slice(1)}`);
     this.hud.dialog(g.texture.key, g.def.name.toUpperCase(), g.def.line);
     this.hud.toast(`CANDIDATE FREED  ${this.freedCount}/5`);
     if (g.def.gives === 'feather') {

@@ -30,7 +30,7 @@ export const platforms = [
 export const ghosts = [
   { col: 22, row: 13, name: 'Maya', role: 'Graphic Designer',
     prop: 'pen', line: 'Thanks for respecting my humanity, Sam!' },
-  { col: 47, row: 9, name: 'Marcus', role: 'IT Specialist',
+  { col: 47, row: 12, name: 'Marcus', role: 'IT Specialist',
     prop: 'keyboard', line: 'Appreciate the dignity power-up!' },
   { col: 66, row: 13, name: 'Jordan', role: 'Data Analyst', hidden: 'stack', prop: 'chart',
     line: "Thanks for telling me I'm not right for this one. My friend would be a perfect fit!" },
@@ -48,7 +48,7 @@ export const breakables = [
 
 // Buzzword Flashbangs: [col, row, patrol range in tiles]
 export const orbs = [
-  [55, 11, 3],
+  [55, 12, 3],
   [95, 12, 2],
 ];
 
