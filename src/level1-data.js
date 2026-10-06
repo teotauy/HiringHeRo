@@ -60,9 +60,9 @@ export const checkpoints = [2, 88, 156];
 
 // Tutorial / flavor signs: [col, text]
 export const signs = [
-  [5, '◀ ▶  MOVE'],
+  [5, 'LEFT/RIGHT: MOVE'],
   [11, 'JUMP'],
-  [17, 'FIRE STATUS UPDATES AT TRAPPED CANDIDATES'],
+  [17, 'FIRE: FREE THE CANDIDATES'],
   [61, 'Those resumes look... unread.'],
   [97, 'SCOPE CREEP. Wait for it.'],
   [104, 'Something is stuck across that gap.'],

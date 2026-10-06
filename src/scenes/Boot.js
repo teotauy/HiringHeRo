@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { loadPixelFont } from '../fonts.js';
 
 // Greybox art: every texture is drawn in code so the game runs with zero asset files.
 // The art pass replaces these keys with real sprites one by one.
@@ -104,6 +105,27 @@ export default class Boot extends Phaser.Scene {
     });
     tex(this, 'spark', 3, 3, (g) => { g.fillStyle(0xffffff).fillRect(0, 0, 3, 3); });
 
-    this.scene.start('Title');
+    // Title-screen night skyline, drawn at 320x180 and shown at 3x for chunky NES pixels.
+    tex(this, 'skyline', 320, 180, (g) => {
+      g.fillStyle(0x000000).fillRect(0, 0, 320, 180);
+      g.fillStyle(0xfcfcfc);
+      for (let i = 0; i < 70; i++) g.fillRect(Phaser.Math.Between(0, 319), Phaser.Math.Between(0, 110), 1, 1);
+      g.fillStyle(0x0c1638);
+      [[0, 128, 34], [30, 116, 26], [52, 124, 30], [212, 112, 30], [238, 126, 40], [274, 118, 46]].forEach(([x, y, bw]) => g.fillRect(x, y, bw, 180 - y));
+      g.fillStyle(0x182850).fillRect(116, 44, 88, 136);
+      g.fillStyle(0x24386c).fillRect(124, 36, 72, 10).fillRect(156, 18, 8, 18);
+      g.fillStyle(0xd82800).fillRect(159, 14, 2, 3);
+      for (let y = 52; y < 176; y += 7) {
+        for (let x = 122; x < 200; x += 8) {
+          g.fillStyle(Math.random() < 0.35 ? 0x58d854 : 0x0c3a20).fillRect(x, y, 4, 4);
+        }
+      }
+      g.fillStyle(0x0c1638);
+      for (let y = 132; y < 176; y += 8) for (let x = 4; x < 320; x += 12) if (x < 112 || x > 208) g.fillRect(x, y, 3, 3);
+      g.fillStyle(0x3c3c3c).fillRect(0, 151, 72, 29);
+      g.fillStyle(0x7c7c7c).fillRect(0, 151, 72, 2);
+    });
+
+    loadPixelFont().then(() => this.scene.start('Title'));
   }
 }

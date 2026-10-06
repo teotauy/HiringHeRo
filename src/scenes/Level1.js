@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import * as L from '../level1-data.js';
+import { PIXEL as FONT } from '../fonts.js';
+import * as audio from '../audio.js';
 
 const { T, ROWS, COLS } = L;
 const WORLD_W = COLS * T;
@@ -14,7 +16,6 @@ const JUMP_BUFFER_MS = 130;
 const FIRE_COOLDOWN_MS = 220;
 const BOSS_HP = 24;
 
-const FONT = 'ui-monospace, Menlo, monospace';
 
 export default class Level1 extends Phaser.Scene {
   constructor() { super('Level1'); }
@@ -91,6 +92,7 @@ export default class Level1 extends Phaser.Scene {
       const y = L.groundTopRow(col) * T - 40;
       this.add.text(col * T, y, text, {
         fontFamily: FONT, fontSize: '8px', color: '#9fd8b8', align: 'center', wordWrap: { width: 150 },
+        backgroundColor: '#071114', padding: { x: 4, y: 4 }, lineSpacing: 4,
       }).setOrigin(0.5, 1).setResolution(4).setAlpha(0.9);
     }
   }
@@ -153,7 +155,7 @@ export default class Level1 extends Phaser.Scene {
       const o = this.orbs.create(col * T, row * T, 'orb');
       o.hp = 2;
       this.tweens.add({ targets: o, x: o.x + range * T, yoyo: true, repeat: -1, duration: 1400 + range * 200, ease: 'Sine.inOut' });
-      o.label = this.add.text(o.x, o.y - 12, 'SYNERGY', { fontFamily: FONT, fontSize: '6px', color: '#d6c2ff' })
+      o.label = this.add.text(o.x, o.y - 12, 'SYNERGY', { fontFamily: FONT, fontSize: '8px', color: '#d6c2ff' })
         .setOrigin(0.5).setResolution(4);
     }
     this.physics.add.overlap(this.player, this.orbs, () => this.flashbang());
@@ -201,6 +203,7 @@ export default class Level1 extends Phaser.Scene {
 
     if (!pinned && time - this.lastJumpPress < JUMP_BUFFER_MS && time - this.lastGround < COYOTE_MS) {
       p.setVelocityY(JUMP_VELOCITY);
+      audio.sfx('jump');
       this.lastJumpPress = -1e9;
       this.lastGround = -1e9;
     }
@@ -225,6 +228,7 @@ export default class Level1 extends Phaser.Scene {
 
   fire(time) {
     this.nextFire = time + FIRE_COOLDOWN_MS;
+    audio.sfx('fire');
     const e = this.bullets.create(this.player.x + this.facing * 9, this.player.y - 1, 'envelope');
     e.setVelocityX(300 * this.facing).setFlipX(this.facing < 0).setDepth(9);
     e.die = time + 1300;
@@ -280,6 +284,7 @@ export default class Level1 extends Phaser.Scene {
     s.setTintFill(0xffffff);
     this.time.delayedCall(60, () => s.active && s.clearTint());
     if (s.hp > 0) return;
+    audio.sfx('break');
     this.burst(s.x, s.y, 0xf4f1e8);
     const g = s.ghost;
     s.destroy();
@@ -300,6 +305,7 @@ export default class Level1 extends Phaser.Scene {
     g.body.enable = false;
     g.setDepth(9);
     this.freedCount += 1;
+    audio.sfx('free');
     this.followers.push(g);
     this.burst(g.x, g.y, 0xdff4ff);
     this.speech(g.x, g.y - 12, `${g.def.name}: "${g.def.line}"`);
@@ -335,6 +341,7 @@ export default class Level1 extends Phaser.Scene {
       }
     }
     this.hearts -= 1;
+    audio.sfx('hurt');
     this.blink();
     this.cameras.main.shake(120, 0.004);
     if (this.hearts <= 0) {
@@ -512,14 +519,14 @@ export default class Level1 extends Phaser.Scene {
   }
 
   floatText(x, y, str, color) {
-    const t = this.add.text(x, y, str, { fontFamily: FONT, fontSize: '8px', fontStyle: 'bold', color, stroke: '#0b1a1f', strokeThickness: 3 })
+    const t = this.add.text(x, y, str, { fontFamily: FONT, fontSize: '8px', color, stroke: '#0b1a1f', strokeThickness: 3 })
       .setOrigin(0.5).setResolution(4).setDepth(30);
     this.tweens.add({ targets: t, y: y - 18, alpha: 0, duration: 1300, onComplete: () => t.destroy() });
   }
 
   speech(x, y, str) {
     const t = this.add.text(x, y, str, {
-      fontFamily: FONT, fontSize: '7px', color: '#0b1a1f', backgroundColor: '#f4f1e8',
+      fontFamily: FONT, fontSize: '8px', color: '#0b1a1f', backgroundColor: '#f4f1e8', lineSpacing: 3,
       padding: { x: 4, y: 3 }, wordWrap: { width: 140 }, align: 'center',
     }).setOrigin(0.5, 1).setResolution(4).setDepth(40);
     this.tweens.add({ targets: t, y: y - 10, alpha: 0, delay: 2800, duration: 600, onComplete: () => t.destroy() });

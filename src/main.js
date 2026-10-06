@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Boot from './scenes/Boot.js';
 import Title from './scenes/Title.js';
+import Intro from './scenes/Intro.js';
 import Level1 from './scenes/Level1.js';
 import Hud from './scenes/Hud.js';
 import End from './scenes/End.js';
@@ -18,5 +19,5 @@ window.__game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { gravity: { y: 900 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   input: { activePointers: 4 },
-  scene: [Boot, Title, Level1, Hud, End],
+  scene: [Boot, Title, Intro, Level1, Hud, End],
 });
