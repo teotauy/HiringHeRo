@@ -25,17 +25,23 @@ export default class End extends Phaser.Scene {
     t(296, `CANDIDATES FREED ${r.freed}/5    TIME ${r.seconds}s\n${verdict}`, 16, '#58d854');
 
     const url = location.href.split('?')[0];
-    this.button(w / 2 - 250, 392, 'SHARE ON LINKEDIN', '#0058f8', () => {
+    this.button(w / 2 - 250, 380, 'SHARE ON LINKEDIN', '#0058f8', () => {
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener');
     });
-    const copy = this.button(w / 2 + 40, 392, 'COPY LINK', '#3c3c3c', async () => {
+    const copy = this.button(w / 2 + 40, 380, 'COPY LINK', '#3c3c3c', async () => {
       try { await navigator.clipboard.writeText(url); copy.setText('COPIED!'); } catch { copy.setText(url); }
     });
-    this.button(w / 2 + 250, 392, 'PLAY AGAIN', '#00a800', () => this.scene.start('Title'));
+    this.button(w / 2 + 250, 380, 'PLAY AGAIN', '#00a800', () => this.scene.start('Title'));
 
-    const tbc = t(458, 'TO BE CONTINUED?', 20, '#f8b800');
+    // Assembled at runtime so the address isn't sitting in the page as one scrapeable string.
+    const mail = ['colby', 'colbyangusblack.com'].join('@');
+    this.button(w / 2, 440, 'EMAIL COLBY', '#d82800', () => {
+      window.location.href = `mailto:${mail}?subject=${encodeURIComponent('Hiring HeRo')}`;
+    });
+
+    const tbc = t(490, 'TO BE CONTINUED?', 20, '#f8b800');
     this.tweens.add({ targets: tbc, alpha: 0.25, yoyo: true, repeat: -1, duration: 600, ease: 'Stepped', easeParams: [2] });
-    t(508, "HIRING HeRo  WORLD 1-1  HUMANITY ISN'T JUST A RESOURCE.", 10, '#7c7c7c');
+    t(520, "HIRING HeRo  WORLD 1-1  HUMANITY ISN'T JUST A RESOURCE.", 10, '#7c7c7c');
   }
 
   button(x, y, label, bg, onClick) {
