@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#071114" />
+  <title>Hiring HeRo</title>
+  <meta name="description" content="Humanity Isn't Just a Resource. Rescue ghosted candidates from the ATS Void." />
+  <style>
+    html, body { margin: 0; height: 100%; background: #071114; overflow: hidden; }
+    body { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    #game { position: fixed; inset: 0; }
+    #rotate { display: none; position: fixed; inset: 0; z-index: 10; background: #071114; color: #dff4ff;
+      font: 600 18px/1.4 ui-monospace, Menlo, monospace; text-align: center; align-items: center; justify-content: center; padding: 24px; }
+    @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="rotate">Turn your phone sideways.<br />Sam needs room to run.</div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
