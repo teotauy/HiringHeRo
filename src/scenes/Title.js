@@ -114,7 +114,7 @@ export default class Title extends Phaser.Scene {
 
   buildMenu(w) {
     this.items = [
-      { label: '1 PLAYER GAME', run: () => this.startGame() },
+      { label: 'START', run: () => this.startGame() },
       { label: 'HOW TO PLAY', run: () => this.openPanel('how') },
       { label: () => `SOUND  ${audio.isMuted() ? 'OFF' : 'ON'}`, run: () => this.toggleSound() },
       { label: 'CREDITS', run: () => this.openPanel('credits') },
@@ -214,6 +214,7 @@ export default class Title extends Phaser.Scene {
         'TO HEAR BACK.',
       ];
     const g = this.add.graphics();
+    g.fillStyle(0x000000, 0.9).fillRect(0, 0, w, h);
     g.fillStyle(0x000000, 1).fillRect(110, 60, w - 220, h - 120);
     g.lineStyle(4, 0xfcfcfc).strokeRect(118, 68, w - 236, h - 136);
     g.lineStyle(2, 0xfcfcfc).strokeRect(126, 76, w - 252, h - 152);
@@ -221,6 +222,8 @@ export default class Title extends Phaser.Scene {
     const text = txt(this, w / 2, 280, body.join('\n'), 14, NES.white, { lineSpacing: 9 });
     const back = txt(this, w / 2, h - 92, 'PUSH ANY BUTTON', 12, NES.grey);
     this.panel = [g, title, text, back];
+    // Sit above the logo, parade and menu.
+    this.panel.forEach((o) => o.setDepth(100));
   }
 
   closePanel() {

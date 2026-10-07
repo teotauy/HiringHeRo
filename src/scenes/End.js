@@ -33,7 +33,9 @@ export default class End extends Phaser.Scene {
     });
     this.button(w / 2 + 250, 392, 'PLAY AGAIN', '#00a800', () => this.scene.start('Title'));
 
-    t(484, "HIRING HeRo  WORLD 1-1  HUMANITY ISN'T JUST A RESOURCE.", 10, '#7c7c7c');
+    const tbc = t(458, 'TO BE CONTINUED?', 20, '#f8b800');
+    this.tweens.add({ targets: tbc, alpha: 0.25, yoyo: true, repeat: -1, duration: 600, ease: 'Stepped', easeParams: [2] });
+    t(508, "HIRING HeRo  WORLD 1-1  HUMANITY ISN'T JUST A RESOURCE.", 10, '#7c7c7c');
   }
 
   button(x, y, label, bg, onClick) {
