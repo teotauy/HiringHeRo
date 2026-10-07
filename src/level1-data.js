@@ -28,17 +28,18 @@ export const platforms = [
   [184, 10, 4],
 ];
 
-// Ghosted candidates. `hidden` = behind a breakable object; `gives` = suit unlock.
+// Ghosted candidates, in the order most players reach them. `reject` is Sam's honest feedback,
+// escalating from gentle to absurd. `hidden` = behind a breakable object; `gives` = suit unlock.
 export const ghosts = [
-  { col: 22, row: 13, name: 'Maya', role: 'Graphic Designer',
+  { col: 22, row: 13, name: 'Maya', reject: "You're not the right fit.", role: 'Graphic Designer',
     prop: 'pen', line: 'Thanks for respecting my humanity, Sam!' },
-  { col: 47, row: 12, name: 'Marcus', role: 'IT Specialist',
+  { col: 47, row: 12, name: 'Marcus', reject: "The position didn't get funding.", role: 'IT Specialist',
     prop: 'keyboard', line: 'Appreciate the dignity power-up!' },
-  { col: 66, row: 13, name: 'Jordan', role: 'Data Analyst', hidden: 'stack', prop: 'chart',
+  { col: 66, row: 13, name: 'Jordan', reject: 'We went another direction.', role: 'Data Analyst', hidden: 'stack', prop: 'chart',
     line: "Thanks for telling me I'm not right for this one. My friend would be a perfect fit!" },
-  { col: 86, row: 11, name: 'Sarah', role: 'Copywriter', gives: 'feather', prop: 'quill',
+  { col: 86, row: 11, name: 'Sarah', reject: "You're overqualified. And underqualified.", role: 'Copywriter', gives: 'feather', prop: 'quill',
     line: 'Take my quill, Sam. Hold JUMP to glide on pure buzzwords.' },
-  { col: 125, row: 7, name: 'Riley', role: 'Office Coordinator', hidden: 'cabinet', prop: 'mug',
+  { col: 125, row: 7, name: 'Riley', reject: 'We hired your ex.', role: 'Office Coordinator', hidden: 'cabinet', prop: 'mug',
     line: "I'll recommend this company to friends who need a job." },
 ];
 
