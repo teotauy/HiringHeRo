@@ -21,7 +21,9 @@ export const platforms = [
   [102, 11, 2],
   [105, 9, 2],
   [108, 7, 3],
-  [123, 8, 4], // the ledge you can only reach by gliding
+  [115, 12, 2], // stair-step desks up to Riley's ledge from the low floor
+  [118, 10, 2],
+  [123, 8, 4], // Riley's ledge: glide across from the left, or climb the desks
   [171, 10, 4],
   [184, 10, 4],
 ];
