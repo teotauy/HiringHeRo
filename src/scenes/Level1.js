@@ -17,17 +17,6 @@ const JUMP_BUFFER_MS = 130;
 const FIRE_COOLDOWN_MS = 220;
 const BOSS_HP = 24;
 
-// Sam's feedback when freeing a candidate. Bad news, honestly delivered, is still closure.
-const REJECTIONS = [
-  "You're not the right fit.",
-  "The position didn't get funding.",
-  'We went another direction.',
-  'We hired your ex.',
-  'The role was filled internally. By the CEO\'s nephew.',
-  "You're overqualified. And underqualified.",
-  'The hiring manager quit. So did the job.',
-  'We paused hiring. Forever.',
-];
 const BUZZWORDS = ['SYNERGY!', 'PIVOT!', 'LEVERAGE!', 'CIRCLE BACK!', 'BANDWIDTH!'];
 
 export default class Level1 extends Phaser.Scene {
@@ -53,7 +42,6 @@ export default class Level1 extends Phaser.Scene {
     this.bossDone = false;
     this.frozen = false;
     this.skin = this.registry.get('skin') || 'sam';
-    this.rejections = Phaser.Utils.Array.Shuffle([...REJECTIONS]);
 
     this.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
     const cam = this.cameras.main;
@@ -344,8 +332,7 @@ export default class Level1 extends Phaser.Scene {
     this.followers.push(g);
     this.burst(g.x, g.y, 0xdff4ff);
     // Sam delivers honest feedback, then the freed candidate answers.
-    if (!this.rejections.length) this.rejections = Phaser.Utils.Array.Shuffle([...REJECTIONS]);
-    const reason = this.rejections.pop();
+    const reason = g.def.reject;
     this.hud.dialog(`${this.skin}_stand`, SAM_NAMES[this.skin], `${g.def.name}, ${reason[0].toLowerCase()}${reason.slice(1)}`);
     this.hud.dialog(g.texture.key, g.def.name.toUpperCase(), g.def.line);
     this.hud.toast(`CANDIDATE FREED  ${this.freedCount}/5`);
