@@ -203,7 +203,7 @@ export default class Title extends Phaser.Scene {
         'HOLD JUMP TO GLIDE (WITH FEATHER)',
       ]
       : [
-        'A GAME BY COLBY',
+        'A GAME BY COLBY BLACK | RED CROW LABS',
         '',
         'SAM ........... JR. RECRUITER',
         'OMNICORP ...... ITSELF',

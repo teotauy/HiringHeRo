@@ -173,6 +173,6 @@ export default class Boot extends Phaser.Scene {
       g.fillStyle(0x7c7c7c).fillRect(0, 151, 72, 2);
     });
 
-    loadPixelFont().then(() => this.scene.start('Title'));
+    loadPixelFont().then(() => this.scene.start('Winners'));
   }
 }

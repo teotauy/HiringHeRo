@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import Boot from './scenes/Boot.js';
+import Winners from './scenes/Winners.js';
 import Title from './scenes/Title.js';
 import Intro from './scenes/Intro.js';
 import Select from './scenes/Select.js';
@@ -21,5 +22,5 @@ window.__game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { gravity: { y: 900 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   input: { activePointers: 4 },
-  scene: [Boot, Title, Select, Story, Intro, Level1, Hud, End],
+  scene: [Boot, Winners, Title, Select, Story, Intro, Level1, Hud, End],
 });
