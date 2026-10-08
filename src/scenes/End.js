@@ -33,10 +33,8 @@ export default class End extends Phaser.Scene {
     });
     this.button(w / 2 + 250, 380, 'PLAY AGAIN', '#00a800', () => this.scene.start('Title'));
 
-    // Assembled at runtime so the address isn't sitting in the page as one scrapeable string.
-    const mail = ['colby', 'colbyangusblack.com'].join('@');
-    this.button(w / 2, 440, 'EMAIL COLBY', '#d82800', () => {
-      window.location.href = `mailto:${mail}?subject=${encodeURIComponent('Hiring HeRo')}`;
+    this.button(w / 2, 440, 'CONNECT WITH COLBY', '#d82800', () => {
+      window.open('https://www.linkedin.com/in/colbyangusblack/', '_blank', 'noopener');
     });
 
     const tbc = t(490, 'TO BE CONTINUED?', 20, '#f8b800');
