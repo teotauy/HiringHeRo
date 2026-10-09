@@ -41,6 +41,7 @@ export default class Title extends Phaser.Scene {
     txt(this, w / 2, 510, 'ALL CANDIDATES RESERVED.', 12, NES.grey, { stroke: NES.black, strokeThickness: 6 });
 
     this.buildMenu(w);
+    this.setupFullscreen(w);
 
     this.input.keyboard.on('keydown', (e) => this.onKey(e));
     this.input.on('pointerdown', () => {
@@ -102,6 +103,27 @@ export default class Title extends Phaser.Scene {
     this.time.delayedCall(800, () => {
       this.tweens.add({ targets: glows, alpha: 0.12, yoyo: true, repeat: -1, duration: 520, ease: 'Stepped', easeParams: [3] });
     });
+  }
+
+  // Phones only. Android and iPad support the Fullscreen API, so the first tap goes full screen.
+  // iPhone Safari does not (it only allows video), so there we explain the home-screen route instead.
+  setupFullscreen(w) {
+    const touch = this.sys.game.device.input.touch;
+    if (!touch) return;
+    const nav = window.navigator;
+    const installed = nav.standalone === true || window.matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches;
+    if (installed) return;
+    const fs = this.scale.fullscreen;
+    if (fs.available) {
+      // Phaser recommends pointerup: browsers only grant fullscreen inside a user gesture.
+      this.input.once('pointerup', () => { if (!this.scale.isFullscreen) this.scale.startFullscreen(); });
+      return;
+    }
+    const iOS = /iPhone|iPod/.test(nav.userAgent);
+    if (!iOS) return;
+    const hint = txt(this, w / 2, 14, 'FULL SCREEN: TAP SHARE, THEN "ADD TO HOME SCREEN"', 12, NES.yellow,
+      { backgroundColor: NES.black, padding: { x: 6, y: 4 } });
+    this.tweens.add({ targets: hint, alpha: 0.5, yoyo: true, repeat: -1, duration: 900 });
   }
 
   drawGhostParade() {
