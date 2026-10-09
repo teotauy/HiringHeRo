@@ -20,7 +20,7 @@ window.__game = new Phaser.Game({
   pixelArt: true,
   backgroundColor: '#071114',
   physics: { default: 'arcade', arcade: { gravity: { y: 900 }, debug: false } },
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, fullscreenTarget: 'game' },
   input: { activePointers: 4 },
   scene: [Boot, Winners, Title, Select, Story, Intro, Level1, Hud, End],
 });
